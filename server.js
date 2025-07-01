@@ -12,5 +12,8 @@ app.use('/img', express.static(path.join(__dirname, './uploads')));
 
 connectDB();
 
+app.use('/user', require('./routes/user.route'));
+app.use('/auth' ,require('./routes/auth.route'));
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT,()=> console.log(`server running on port: ${PORT}`))
+app.listen(PORT,()=> console.log(`🚀 Server Started at port ${PORT}`))
