@@ -17,6 +17,8 @@ app.use('/auth' ,require('./routes/auth.route'));
 app.use('/products',require('./routes/product.route'))
 app.use('/purchase',require('./routes/purchase.route'))
 app.use('/subcategory',require('./routes/subcategory.route'))
+app.use('/reports',require('./routes/reports.route'))
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT,()=> console.log(`🚀 Server Started at port ${PORT}`))
