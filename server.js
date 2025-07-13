@@ -8,12 +8,12 @@ const corsMiddleware = require('./middlewares/cors.middleware')
 app.use(corsMiddleware);
 
 app.use(express.json());
-app.use('/img', express.static(path.join(__dirname, './uploads')));
+app.use('/uploads', express.static(path.join(__dirname, './uploads')));
 
 connectDB();
 
-app.use('/user', require('./routes/user.route'));
-app.use('/auth' ,require('./routes/auth.route'));
+app.use('/user', require('./routes/user.route'));       // Reg
+app.use('/auth' ,require('./routes/auth.route'));       // Login
 app.use('/products',require('./routes/product.route'))
 app.use('/purchase',require('./routes/purchase.route'))
 app.use('/subcategory',require('./routes/subcategory.route'))

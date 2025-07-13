@@ -49,7 +49,7 @@ exports.getSalesReport = async (req, res, next) => {
           {
             $group: {
               _id: null,
-              totalSalesAmount: { $sum: "$totalPrice" },    // total sale $$ Product price * quantity
+              totalSalesAmount: { $sum: "$totalPrice"},    // total sale $$ Product price * quantity
               totalQuantitySold: { $sum: "$quantity" },
               numberOfPurchases: { $sum: 1 },
             },

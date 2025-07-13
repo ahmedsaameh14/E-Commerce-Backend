@@ -70,6 +70,78 @@ exports.getProducts = async (req, res) => {
     res.status(200).json(res.paginatedResult);
 }
 
+exports.getProductById =async (req,res)=>{
+    const id = req.params.id;
+    const product = await Product.findById(id);
+    if(product){
+        res.status(200).json({message: 'Product Data',data:product});
+    }else{
+        res.status(404).json({message:'Product Not Found'})
+    }
+}
+
+exports.getRelatedProducts =async (req,res)=>{
+    const id = req.params.id;
+    const product = await Product.where('_id').ne(id).limit(6)         // Get 5 more products without the one i get before
+    if(product){
+        res.status(200).json({message: 'Product Data',data:product});
+    }else{
+        res.status(404).json({message:'Product Not Found'})
+    }
+}
+
+exports.updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if product exists
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product Not Found' });
+    }
+
+    const { name, desc, price, stock, subCategory } = req.body;
+
+    // Handle image update if file was uploaded
+    let imgURL = product.imgURL;
+    if (req.file) {
+      imgURL = req.file.filename;
+    }
+
+    // Handle subCategory (string name or ID)
+    let subCategoryId = subCategory || product.subCategory;
+    if (subCategory && !mongoose.Types.ObjectId.isValid(subCategory)) {
+      const subCatDoc = await SubCategory.findOne({ name: subCategory });
+      if (!subCatDoc) {
+        return res.status(400).json({ message: 'Invalid subCategory name' });
+      }
+      subCategoryId = subCatDoc._id;
+    }
+
+    // Update product
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      {
+        name: name || product.name,
+        desc: desc || product.desc,
+        price: price || product.price,
+        stock: parseInt(stock) || product.stock,
+        imgURL,
+        subCategory: subCategoryId
+      },
+      { new: true }
+    );
+
+    res.status(200).json({ message: 'Product Updated', updatedProduct });
+
+  } catch (err) {
+    res.status(500).json({
+      message: 'Failed to update product',
+      error: err.message
+    });
+  }
+};
+
 
 // Normal Get Data
 // exports.getProducts = async (req, res) => {
