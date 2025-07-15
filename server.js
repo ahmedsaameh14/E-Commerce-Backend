@@ -17,6 +17,7 @@ app.use('/auth' ,require('./routes/auth.route'));       // Login
 app.use('/products',require('./routes/product.route'))
 app.use('/purchase',require('./routes/purchase.route'))
 app.use('/subcategory',require('./routes/subcategory.route'))
+app.use('/cart' , require('./routes/cart.route'))
 app.use('/reports',require('./routes/reports.route'))
 
 
