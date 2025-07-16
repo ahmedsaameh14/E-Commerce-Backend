@@ -7,6 +7,7 @@ exports.addToCart = async (req, res) => {
     const session = await mongoose.startSession()
     session.startTransaction();
     try {
+        // console.log('req.user', req.user );          // Test
         const { productId, quantity } = req.body;
         if (!productId || !quantity) {
             return res.status(400).json({ message: "Product ID and quantity are required" });
@@ -73,19 +74,25 @@ exports.addToCart = async (req, res) => {
         session.endSession();
         return res.status(500).json({ error: "Server error while adding to cart." });
     }
+    
+
 };
 
 
+// FIXED CONTROLLER
 exports.getUserProductInCart = async (req, res) => {
     try {
-        const cart = await Cart.find({ userId: req.user._id }).populate("productId", "product_title stock")
+        const cart = await Cart.find({ userId: req.user._id })
+            .populate("productId", "name stock imgURL");
+
         return res.status(200).json({ message: "Product in cart", data: cart });
     } catch (error) {
         res.status(500).json({
             error: "Server error while getting product in cart."
         });
     }
-}
+};
+
 
 
 exports.getAllUserProductInCart = async (req, res) => {

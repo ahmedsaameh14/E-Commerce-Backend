@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Cart = require('./cart.model')
 
 const productSchema = new mongoose.Schema({
     name:{
@@ -30,23 +31,28 @@ const productSchema = new mongoose.Schema({
 
 
 productSchema.post('findOneAndUpdate', async (doc) => {
-    if (!doc) return
-    try {
-        const productId = doc._id
-        const newPrice = doc.price
-        const cartItems = await Cart.find({
-            productId, isPurchased: false
-        })
-        for (const item of cartItems) {
-            if (item.currentPrice !== newPrice) {
-                item.currentPrice = newPrice;
-                item.priceChanged = true;
-                await item.save();
-            }
-        }
-    } catch (error) {
-        res.send(500).json({ error: error })
+  if (!doc) return;
+
+  try {
+    const productId = doc._id;
+    const newPrice = doc.price;
+
+    const cartItems = await Cart.find({
+      productId,
+      isPurchased: false,
+    });
+
+    for (const item of cartItems) {
+      if (item.currentPrice !== newPrice) {
+        item.currentPrice = newPrice;
+        item.priceChanged = true;
+        await item.save();
+      }
     }
-})
+  } catch (error) {
+    console.error('Error in post findOneAndUpdate hook:', error); 
+  }
+});
+
 
 module.exports = mongoose.model('Product', productSchema);
