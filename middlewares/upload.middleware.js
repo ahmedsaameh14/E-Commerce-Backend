@@ -3,7 +3,7 @@ const path = require("path");
 
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
-  const allowed = [".jpg", ".png", ".jpeg"];
+  const allowed = [".jpg", ".png", ".jpeg", "webp"];
   if (!allowed.includes(ext)) {
     return cb(new Error("Images Only"));
   } else {
