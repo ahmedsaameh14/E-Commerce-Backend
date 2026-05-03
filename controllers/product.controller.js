@@ -149,3 +149,28 @@ exports.updateProduct = async (req, res) => {
 //   res.status(200).json({ message: "list of products", data: products });
 // };
 
+exports.deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        message: 'Product Not Found'
+      });
+    }
+
+    await Product.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: 'Product Deleted Successfully'
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: 'Failed to delete product',
+      error: err.message
+    });
+  }
+};
