@@ -32,7 +32,7 @@ const mongoose = require('mongoose');
 exports.createProduct = async (req, res) => {
     try {
         const { name, desc, price, stock, subCategory } = req.body;
-        const imgURL = req.file.filename;
+        const imgURL = req.file.path; // Assuming multer is configured to save the file and provide the path
 
         
         let subCategoryId = subCategory;
@@ -105,7 +105,7 @@ exports.updateProduct = async (req, res) => {
     // Handle image update if file was uploaded
     let imgURL = product.imgURL;
     if (req.file) {
-      imgURL = req.file.filename;
+      imgURL = req.file.path; // Assuming multer is configured to save the file and provide the path
     }
 
     // Handle subCategory (string name or ID)
