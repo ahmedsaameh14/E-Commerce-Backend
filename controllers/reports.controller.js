@@ -1,13 +1,28 @@
 const Purchase = require("../models/purchase.model");
 const mongoose = require("mongoose");
+const catchAsync = require("../utils/catch-async.util");
+const AppError = require("../utils/app-error.util");
 
-exports.getSalesReport = async (req, res, next) => {
+exports.getSalesReport = catchAsync(async (req, res, next) => {
   const { startDate, endDate } = req.query;
   const matchStage = {};
+  
   if (startDate || endDate) {
     matchStage.createdAt = {};
-    if (startDate) matchStage.createdAt.$gte = new Date(startDate);
-    if (endDate) matchStage.createdAt.$lte = new Date(endDate);
+    if (startDate) {
+      const start = new Date(startDate);
+      if (isNaN(start)) {
+        return next(new AppError('Invalid startDate format', 400));
+      }
+      matchStage.createdAt.$gte = start;
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      if (isNaN(end)) {
+        return next(new AppError('Invalid endDate format', 400));
+      }
+      matchStage.createdAt.$lte = end;
+    }
   }
 
   const report = await Purchase.aggregate([
@@ -16,19 +31,19 @@ exports.getSalesReport = async (req, res, next) => {
 
     {
       $lookup: {
-        from: "users", // name of field in DB users not user
+        from: "users",
         localField: "user",
         foreignField: "_id",
         as: "user",
       },
     },
-    { $unwind: "$user" }, // for not dublicate user when get it back
+    { $unwind: "$user" },
 
 
     {
       $lookup: {
         from: "products",
-        localField: "product", // assuming it's a field like: product: ObjectId
+        localField: "product",
         foreignField: "_id",
         as: "product",
       },
@@ -49,7 +64,7 @@ exports.getSalesReport = async (req, res, next) => {
           {
             $group: {
               _id: null,
-              totalSalesAmount: { $sum: "$totalPrice"},    // total sale $$ Product price * quantity
+              totalSalesAmount: { $sum: "$totalPrice"},
               totalQuantitySold: { $sum: "$quantity" },
               numberOfPurchases: { $sum: 1 },
             },
@@ -61,7 +76,7 @@ exports.getSalesReport = async (req, res, next) => {
             $group: {
               _id: "$product._id",
               name: { $first: "$product.name" },
-              revenue: { $sum: "$totalPrice" },     //Product price
+              revenue: { $sum: "$totalPrice" },
               soldQuantity: { $sum: "$quantity" },
             },
           },
@@ -98,8 +113,7 @@ exports.getSalesReport = async (req, res, next) => {
         ],
       },
     },
-
-
   ]);
+  
   res.status(200).json(report);
-};
+});

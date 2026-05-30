@@ -1,5 +1,7 @@
 const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
+const catchAsync = require('../utils/catch-async.util');
+const AppError = require('../utils/app-error.util');
 
 const signToken = (user)=>{
     return jwt.sign({id: user._id,role:user.role, name:user.name},      // Token Will Carry This Data
@@ -8,13 +10,18 @@ const signToken = (user)=>{
     )           
 }
 
-exports.login = async (req,res)=>{
+exports.login = catchAsync(async (req,res,next)=>{
     const {email , password} = req.body;
+    
+    if(!email || !password){
+        return next(new AppError('Please provide email and password', 400));
+    }
+    
     const user = await User.findOne({email});
     if(!user || !(await user.correctPassword(password))){
-        return res.status(401).json({message:"Email or Password invalid"})
+        return next(new AppError('Email or Password invalid', 401));
     }
+    
     const token = signToken(user);
-
-    return res.status(200).json({message: "You are LogedIn" , token});
-}
+    res.status(200).json({message: "You are LogedIn" , token});
+})
