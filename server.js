@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const connectDB = require('./config/db.config');
 const path = require('path')
+const helmet = require('helmet');
 const app = express();
 const corsMiddleware = require('./middlewares/cors.middleware')
 const globalErrorHandler = require('./middlewares/globalError.middleware');
@@ -12,6 +13,7 @@ app.use(corsMiddleware);
 
 app.use(express.json());
 // app.use('/uploads', express.static(path.join(__dirname, './uploads')));
+app.use(helmet());
 
 connectDB();
 
