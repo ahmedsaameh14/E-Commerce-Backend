@@ -3,6 +3,7 @@ const router = express.Router()
 const orderControllers = require("../controllers/order.controller")
 const { authenticate } = require("../middlewares/auth.middleware");
 const { authorize } = require("../middlewares/role.middleware");
+const { sensitiveActionLimiter } = require('../middlewares/rateLimit.middleware')
 const { createOrder, getMyOrders, getMyOrderById ,cancelMyOrder } = orderControllers
 
 //admin
@@ -14,7 +15,7 @@ router.put("/status/:id/byAdmin", authenticate, authorize('admin'), orderControl
 // user 
 router.get("/",authenticate , getMyOrders);
 router.get("/:id", authenticate, getMyOrderById);
-router.post("/", authenticate, authorize('user'), createOrder);
-router.put("/cancel/:id/status", authenticate, authorize('user'), cancelMyOrder);
+router.post("/", authenticate, authorize('user'), sensitiveActionLimiter, createOrder);
+router.put("/cancel/:id/status", authenticate, authorize('user'), sensitiveActionLimiter, cancelMyOrder);
 
 module.exports = router
