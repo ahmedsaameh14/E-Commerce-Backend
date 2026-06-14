@@ -1,3 +1,4 @@
+const logger = require('../utils/logger');
 const AppError = require('../utils/app-error.util');
 
 module.exports = (err, req, res, next) => {
@@ -62,6 +63,7 @@ module.exports = (err, req, res, next) => {
 
   // Operational errors (from AppError) - send detailed message
   if (err.isOperational) {
+    logger.error(err);
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
@@ -70,6 +72,7 @@ module.exports = (err, req, res, next) => {
   } 
   // Programming or unknown error - don't leak details
   else {
+    logger.error(err);
     res.status(500).json({
       status: 'error',
       message: 'Something went very wrong!',
