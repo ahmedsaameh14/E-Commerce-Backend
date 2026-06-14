@@ -9,6 +9,9 @@ const corsMiddleware = require('./middlewares/cors.middleware')
 const globalErrorHandler = require('./middlewares/globalError.middleware');
 const AppError = require('./utils/app-error.util');
 
+const morgan = require('morgan');
+app.use(morgan('combined'));
+
 app.use(corsMiddleware);
 
 app.use(express.json());
